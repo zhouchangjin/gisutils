@@ -1,0 +1,87 @@
+package com.iwhere.gisutil.converter.osm.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.iwhere.gisutil.converter.osm.model.names.CommonTagEnum;
+import com.iwhere.gisutil.converter.osm.model.names.FeatureClassEnum;
+import com.iwhere.gisutil.converter.osm.model.names.OnewayEnum;
+
+
+public class WayElement {
+
+	
+	int id;
+	int version=1;
+	String timestamp;
+
+	List<Integer> nodesRef;
+	
+	List<TagElement> taglist;
+	
+	public WayElement() {
+		nodesRef=new ArrayList<Integer>();
+		taglist=new ArrayList<TagElement>();
+	}
+	
+	public void AddTag(TagElement tag) {
+		taglist.add(tag);
+	}
+	
+	public void addTag(String k,String v) {
+		TagElement tag=new TagElement(k,v);
+		taglist.add(tag);
+	}
+	
+	public List<TagElement> getTags(){
+		return taglist;
+	}
+	
+	public void AddRefNode(int nodeId) {
+		nodesRef.add(nodeId);
+	}
+	
+	public List<Integer> getNodeList(){
+		return nodesRef;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
+	}
+
+	public String getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(String timestamp) {
+		this.timestamp = timestamp;
+	}
+	
+	public void addHighwayClassTag(FeatureClassEnum classType) {
+		addTag(CommonTagEnum.HIGHWAY_TAG.getTag(), classType.getFClass());
+	}
+	
+	public void addFeatureClassTag(FeatureClassEnum classType) {
+		   addTag(CommonTagEnum.CLASS_TAG.getTag(), classType.getFClass());
+	}
+	
+	public void addOnewayTag(OnewayEnum onewy) {
+		  addTag(CommonTagEnum.ONEWAY_TAG.getTag(), onewy.name());
+	}
+	
+	public void addNameTag(String name) {
+		addTag(CommonTagEnum.NAME_TAG.getTag(), name);
+	}
+}

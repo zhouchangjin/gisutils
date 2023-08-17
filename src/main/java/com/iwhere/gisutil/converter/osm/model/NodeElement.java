@@ -3,7 +3,7 @@ package com.iwhere.gisutil.converter.osm.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NodeElement {
+public class NodeElement implements ISerializedString{
 	
 	String id;
 	String action;
@@ -79,6 +79,17 @@ public class NodeElement {
 	}
 	public void setLat(double lat) {
 		this.lat = lat;
+	}
+	
+	@Override
+	public String toXMLString() {
+		StringBuilder sb=new StringBuilder();
+		sb.append("<node id='").append(id)
+		.append("' visible='").append(visible)
+		.append("' version='").append(version)
+		.append("' lat='").append(lat)
+		.append("' lon='").append(lon).append("' />");
+		return sb.toString();
 	}
 
 }

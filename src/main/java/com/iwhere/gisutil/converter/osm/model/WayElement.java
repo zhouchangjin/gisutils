@@ -8,7 +8,7 @@ import com.iwhere.gisutil.converter.osm.model.names.FeatureClassEnum;
 import com.iwhere.gisutil.converter.osm.model.names.OnewayEnum;
 
 
-public class WayElement {
+public class WayElement implements ISerializedString {
 
 	
 	int id;
@@ -83,5 +83,25 @@ public class WayElement {
 	
 	public void addNameTag(String name) {
 		addTag(CommonTagEnum.NAME_TAG.getTag(), name);
+	}
+
+	@Override
+	public String toXMLString() {
+		StringBuilder sb=new StringBuilder();
+		sb.append("<way id='").append(id)
+			.append("' visible='true' version='")
+			.append(version).append("'>");
+		sb.append(System.lineSeparator());
+		for(int refid:nodesRef) {
+			sb.append("<nd ref='").append(refid)
+			.append("' />");
+			sb.append(System.lineSeparator());
+		}
+		for(TagElement t:taglist) {
+			sb.append(t.toXMLString());
+		}
+		sb.append("</way>");
+		sb.append(System.lineSeparator());
+		return sb.toString();
 	}
 }

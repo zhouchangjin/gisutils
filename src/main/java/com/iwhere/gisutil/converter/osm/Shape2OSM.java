@@ -89,23 +89,17 @@ public class Shape2OSM {
 			    	  boolean successFlag=CheckRules(config, v);
 			    	  if(successFlag) {
 			    		 return config;
-			    	  }else {
-			    		  return null;
 			    	  }
 			     }else if(config.getDataType().equals("Integer")) {
 			    	 int v=Integer.parseInt(strValue);
 			    	 boolean successFlag=CheckRules(config, v);
 			    	  if(successFlag) {
 			    		 return config;
-			    	  }else {
-			    		  return null;
 			    	  }
 			     }else if(config.getDataType().equals("String")) {
 			    	 boolean successFlag=CheckRules(config, strValue);
 			    	 if(successFlag) {
 			    		 return config;
-			    	 }else {
-			    		 return null;
 			    	 }
 			     }
 		   }
@@ -171,6 +165,7 @@ public class Shape2OSM {
 		        	   if(config==null) {
 		        		   way.addOnewayTag(rule.getDefaultDirection());
 		        	   }else {
+		        		   //System.out.println(config.getOneway());
 			        	   way.addOnewayTag(config.getOneway());
 		        	   }
 		        }

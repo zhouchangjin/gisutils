@@ -1,12 +1,19 @@
-package com.iwhere.gisutil.converter.osm;
+package com.iwhere.gisutil.converter.osm.test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.FeatureSource;
@@ -21,37 +28,87 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import com.iwhere.gisutil.converter.osm.model.WayElement;
 import com.iwhere.gisutil.converter.osm.model.names.FeatureClassEnum;
 import com.iwhere.gisutil.converter.osm.model.names.OnewayEnum;
-import com.iwhere.gisutil.converter.osm.writer.SimpleXMLOSMDocument;
 
-public class Shapefile2OSMConverter {
+public class Shape2OSMConverter {
 	
+	public static void buildXML(String path,String fileName) {
+		 Document document = DocumentHelper.createDocument();
+		 Element head = document.addElement("osm");
+		 head.addAttribute("version", "0.6");
+		 OutputFormat format = OutputFormat.createPrettyPrint();
+	        format.setEncoding("UTF-8");
+	        
+	        ByteArrayOutputStream out = new ByteArrayOutputStream();
+	        try {
+	            XMLWriter writer = new XMLWriter(out, format);
+	            writer.write(document);
+	            writer.close();
+	        } catch (IOException e) {
+	            System.out.println("生成文件失败。文件名【" + fileName + "】");
+	        }
+	        
+	        try (FileOutputStream fos = new FileOutputStream(path+fileName + ".osm")) {
+	            fos.write(out.toByteArray());
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	}
+
 	public static void main(String args[]) {
-		String osmfilePath="d:/";
-		String osmName="Fujian_Road_Network";
-	   SimpleXMLOSMDocument osmdoc=new SimpleXMLOSMDocument(osmfilePath,osmName);
-	   osmdoc.initialize();
-	   osmdoc.open();
-	   osmdoc.writeHeader();
-		String shapefilename="D:/LRDL_道路.shp";
-		File shpFile = new File(shapefilename);
+		
+		// 15万
+		
+		int featureBatchCount=150000;
+		int featureStart=0;
+		int startNodeId=1;
+		int startWayId=1;
+		
+		/**
+		int featureBatchCount=150000;
+		int featureStart=150000;
+		int startNodeId=2007281;
+		int startWayId=150001;
+		**/
+		/**
+		int featureBatchCount=150000;
+		int featureStart=300000;
+		int startNodeId=3121541;
+		int startWayId=300001;
+		**/
+		//2559170
+		//2827434
+		//3139480
+		
+		String part="s"+featureStart+"t"+(featureStart+featureBatchCount);
+		
+		OSMDocument1 osmdoc=new OSMDocument1();
+		osmdoc.setStartNodeId(startNodeId);
+		osmdoc.setStartWayId(startWayId);
+		
+		File shpFile = new File("D:/LRDL_道路.shp");
 		Map<String, Object> params = new HashMap<String, Object>();
-		DataStore dataStore =null;
-		FeatureIterator<SimpleFeature> fit=null;
 		try {
 			params.put("url", shpFile.toURI().toURL());
-			dataStore= DataStoreFinder.getDataStore(params);
+			DataStore dataStore = DataStoreFinder.getDataStore(params);
 			String typeName = dataStore.getTypeNames()[0];
 			((ShapefileDataStore)dataStore).setCharset(Charset.forName("GBK"));
 			System.out.println(typeName);
 			FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = dataStore.getFeatureSource(typeName);
 			FeatureCollection<SimpleFeatureType, SimpleFeature> collection = featureSource.getFeatures();
 			System.out.println("总feature数"+collection.size());
-		    fit=collection.features();
-			//int counter=-1;
+			FeatureIterator<SimpleFeature> fit=collection.features();
+
+			int counter=-1;
 			while(fit.hasNext()) {
 				SimpleFeature feature = fit.next();
-				//counter++;
-				Geometry geometry = (Geometry) feature.getDefaultGeometry();
+				counter++;
+				if(counter<featureStart) {
+					continue;
+				}else if(counter==featureStart+featureBatchCount){
+					break;
+				}
+				
+		        Geometry geometry = (Geometry) feature.getDefaultGeometry();
 		        Coordinate[] coors= geometry.getCoordinates();
 		        WayElement way=new WayElement();
 		        for(Coordinate coor:coors) {
@@ -73,11 +130,11 @@ public class Shapefile2OSMConverter {
 		        	if(width>50) {
 		        		way.addHighwayClassTag(FeatureClassEnum.PRIMARY);
 		        	}else if(width>20) {
-		        		way.addHighwayClassTag(FeatureClassEnum.SECONDARY);
+		        		way.addHighwayClassTag(FeatureClassEnum.PRIMARY);
 		        	}else if(width>10) {
-		        		way.addHighwayClassTag(FeatureClassEnum.TERTIARY);
+		        		way.addHighwayClassTag(FeatureClassEnum.PRIMARY);
 		        	}else {
-		        		way.addHighwayClassTag(FeatureClassEnum.LIVING_STREET);
+		        		way.addHighwayClassTag(FeatureClassEnum.PRIMARY);
 		        	}
 		        }
 		        //道路方向
@@ -88,35 +145,34 @@ public class Shapefile2OSMConverter {
 		        		//双向
 		        		way.addOnewayTag(OnewayEnum.B); 
 		        	}else if(dir==2) {
-		        		way.addOnewayTag(OnewayEnum.F);
+		        		way.addOnewayTag(OnewayEnum.B);
 		        	}else if(dir==3) {
-		        		way.addOnewayTag(OnewayEnum.T);
+		        		way.addOnewayTag(OnewayEnum.B);
 		        	}
 		        }
 		        osmdoc.addWay(way);
+		        
+
 			}
-			
 			fit.close();
 			dataStore.dispose();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally{
-			fit.close();
-			dataStore.dispose();
 		}
 		
-		for(int i=0;i<osmdoc.nodeCnt();i++) {
-			osmdoc.writeNode(i);
-		}
+		osmdoc.processNode();
+		//osmdoc.clearNode();
+		osmdoc.processWay();
 		
-		for(int i=0;i<osmdoc.wayCnt();i++) {
-			osmdoc.writeWay(i);
-		}
-		System.out.println("到这里");
-		osmdoc.writeDocEnd();
-		osmdoc.close();
+		osmdoc.WriteFile("d:/","fujian_road_all_part_"+part);
+		String id=osmdoc.getLastNodeId();
+		String wayid=osmdoc.getLastWayId();
+		System.out.println("wayid="+wayid+"_nodeid="+id);
+		//buildXML("d:/", "path");
+
+
 	}
 
 }

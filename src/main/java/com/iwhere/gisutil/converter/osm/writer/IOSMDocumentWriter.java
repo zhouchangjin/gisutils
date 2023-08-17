@@ -2,7 +2,7 @@ package com.iwhere.gisutil.converter.osm.writer;
 
 import com.iwhere.gisutil.converter.osm.model.WayElement;
 
-public interface IOSMDocument {
+public interface IOSMDocumentWriter {
 	
 	public int addWay(WayElement way);
 	

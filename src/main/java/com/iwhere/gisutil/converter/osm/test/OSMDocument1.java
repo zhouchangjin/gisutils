@@ -1,4 +1,4 @@
-package com.iwhere.gisutil.converter.osm;
+package com.iwhere.gisutil.converter.osm.test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -18,7 +18,7 @@ import com.iwhere.gisutil.converter.osm.model.NodeElement;
 import com.iwhere.gisutil.converter.osm.model.TagElement;
 import com.iwhere.gisutil.converter.osm.model.WayElement;
 
-public class OSMDocument {
+public class OSMDocument1 {
 	
 	Document document;
 	Element osmEle;
@@ -97,7 +97,7 @@ public class OSMDocument {
         }
 	}
 	
-	public OSMDocument() {
+	public OSMDocument1() {
 		initialize();
 	}
 	

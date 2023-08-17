@@ -4,21 +4,15 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.iwhere.gisutil.converter.osm.model.NodeElement;
+import com.iwhere.gisutil.converter.osm.model.OSMDocument;
 import com.iwhere.gisutil.converter.osm.model.WayElement;
 
-public class SimpleXMLOSMDocument implements IOSMDocument {
+public class SimpleOSMDocumentWriter implements IOSMDocumentWriter {
 	
-	Map<String,Integer> nodesetMap;
-	ArrayList<NodeElement> nodelist;
-	ArrayList<WayElement> waylist;
-	
-	int startNodeId=1;
-	int startWayId=1;
+
+	OSMDocument osmDocument;
 	
 	String filePath;
 	String fileName;
@@ -26,7 +20,10 @@ public class SimpleXMLOSMDocument implements IOSMDocument {
 	BufferedWriter docWriter=null;
 	FileWriter fileWriter=null;
 	
-	
+	public OSMDocument getOSM() {
+		return osmDocument;
+	}
+
 	
 	public String getFilePath() {
 		return filePath;
@@ -44,28 +41,12 @@ public class SimpleXMLOSMDocument implements IOSMDocument {
 		this.fileName = fileName;
 	}
 
-	public int getStartNodeId() {
-		return startNodeId;
-	}
-
-	public void setStartNodeId(int startNodeId) {
-		this.startNodeId = startNodeId;
-	}
-
-	public int getStartWayId() {
-		return startWayId;
-	}
-
-	public void setStartWayId(int startWayId) {
-		this.startWayId = startWayId;
-	}
-	
-	public SimpleXMLOSMDocument(String path,String file) {
+	public SimpleOSMDocumentWriter(String path,String file) {
 		this.fileName=file;
 		this.filePath=path;
 	}
 
-	public SimpleXMLOSMDocument() {
+	public SimpleOSMDocumentWriter() {
 		initialize();
 	}
 	
@@ -98,36 +79,17 @@ public class SimpleXMLOSMDocument implements IOSMDocument {
 	}
 	
 	public void initialize() {
-		nodesetMap=new HashMap<String,Integer>();
-		nodelist=new ArrayList<NodeElement>();
-		waylist=new ArrayList<WayElement>();
+		osmDocument=new OSMDocument();
 	}
 
 	@Override
 	public int addWay(WayElement way) {
-		int id=waylist.size()+startWayId;
-		way.setId(id);
-		waylist.add(way);
-		return id;
+		return osmDocument.addWay(way);
 	}
 
 	@Override
 	public int addNode(double longitude, double latitude) {
-		String key=Double.toString(longitude)+"_"+Double.toString(latitude);
-		if(nodesetMap.keySet().contains(key)) {
-			return nodesetMap.get(key);
-		}else {
-			NodeElement ele=new NodeElement();
-			ele.setLon(longitude);
-			ele.setLat(latitude);
-			ele.setAction("");
-			ele.setVisible("true");
-			int id=nodelist.size()+startNodeId;
-			ele.setId(""+id);
-			nodelist.add(ele);
-			nodesetMap.put(key, id);
-			return id;
-		}
+		return osmDocument.addNode(longitude, latitude);
 	}
 	
 	private void nextLine(StringBuilder sb) {
@@ -151,7 +113,7 @@ public class SimpleXMLOSMDocument implements IOSMDocument {
 	@Override
 	public void writeNode(int nodeindex) {
 		
-		NodeElement el=nodelist.get(nodeindex);
+		NodeElement el=osmDocument.getNode(nodeindex);
 		try {
 			docWriter.append(el.toXMLString());
 			docWriter.newLine();
@@ -162,17 +124,17 @@ public class SimpleXMLOSMDocument implements IOSMDocument {
 
 	@Override
 	public int nodeCnt() {
-		return nodelist.size();
+		return osmDocument.nodeCnt();
 	}
 
 	@Override
 	public int wayCnt() {
-		return waylist.size();
+		return osmDocument.wayCnt();
 	}
 
 	@Override
 	public void writeWay(int wayindex) {
-		WayElement way=waylist.get(wayindex);
+		WayElement way=osmDocument.getWay(wayindex);
 		try {
 			docWriter.append(way.toXMLString());
 		} catch (IOException e) {
@@ -194,7 +156,6 @@ public class SimpleXMLOSMDocument implements IOSMDocument {
 			docWriter.append("</osm>");
 			docWriter.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

@@ -12,7 +12,6 @@ import com.iwhere.gisutil.converter.osm.writer.SimpleOSMDocumentWriter;
 public class TestShapefile2OSM {
 	
 	public static void main(String args[]) {
-		//ShapefilePropeties prop,ShapefileMappingRule rule, OSMDocument osm
 		ShapefilePropeties prop=new ShapefilePropeties();
 		prop.setCharset("GBK");
 		prop.setFileName("LRDL_道路");
@@ -70,7 +69,9 @@ public class TestShapefile2OSM {
 		prop.addImportAttribute("OBJECTID",
 				"KINDNUM","KIND","WIDTH",
 				"DIRECTION","FUNCCLASS","LENGTH",
-				"","");
+				"SPEEDCLASS","TOLL","OWNERSHIP",
+				"FORM","ELEVATED","UFLAG",
+				"CLASID");
 		
 		String osmfilePath="d:/";
 		String osmName="Fujian_Road_Network";

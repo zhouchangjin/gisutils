@@ -1,5 +1,6 @@
 package com.iwhere.gisutil.converter.osm;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 /**
@@ -14,6 +15,10 @@ public class ShapefilePropeties {
 	String charset="GBK";
 	
 	List<String> importAttributes;
+	
+	public ShapefilePropeties() {
+		importAttributes=new ArrayList<String>();
+	}
 	
 	public String getCharset() {
 		return charset;

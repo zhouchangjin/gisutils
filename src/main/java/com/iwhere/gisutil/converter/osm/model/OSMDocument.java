@@ -3,7 +3,24 @@ package com.iwhere.gisutil.converter.osm.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * 生产osm文件需要的内存存储对象<br/>
+ * Osm(Open Street Map)是XML格式的文件<br/>
+ * 其中必须的xml元素为<br/>
+ * <node></node> 【必选】每一个经纬度点（如果是线、多边形，就对应路径点和边界点）<br/>
+ * <way></way>   【必选】每一个对象（如点、线、面）<br/>
+ * <osm>
+ *  <node id='生成id' lon='' lat=''>
+ *  <way id='wayid'>
+ *      <node ref='nodeid'/>
+ *      ...<br/>
+ *      <tag k='' v=''/> 
+ *      ....
+ *  </way>
+ * </osm>
+ * @author zhouchangjin
+ *
+ */
 public class OSMDocument implements IOSMDocument{
 	
 	Map<String,Integer> nodesetMap;

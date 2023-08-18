@@ -23,7 +23,11 @@ import com.iwhere.gisutil.converter.osm.model.OSMDocument;
 import com.iwhere.gisutil.converter.osm.model.RuleConfig;
 import com.iwhere.gisutil.converter.osm.model.ShapefileMappingRule;
 import com.iwhere.gisutil.converter.osm.model.WayElement;
-
+/**
+ * Shapefile 路网转换为OSM路网
+ * @author zhouchangjin
+ *
+ */
 public class Shape2OSM {
 	
 	private static boolean CheckRules(RuleConfig config,String value) {
@@ -170,6 +174,15 @@ public class Shape2OSM {
 		        	   }
 		        }
 				osm.addWay(way);
+				
+				List<String> attributes=prop.getAttributes();
+				for(String attrName:attributes) {
+					  Object attrVal=feature.getAttribute(attrName);
+					  if(attrVal!=null) {
+						  way.addTag(attrName, attrVal.toString());
+					  }
+				      //osm为可变字段，空值可以不要
+				}
 
 			}
 			fit.close();

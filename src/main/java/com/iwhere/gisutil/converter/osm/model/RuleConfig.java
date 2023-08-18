@@ -2,7 +2,12 @@ package com.iwhere.gisutil.converter.osm.model;
 
 import com.iwhere.gisutil.converter.osm.model.names.FeatureClassEnum;
 import com.iwhere.gisutil.converter.osm.model.names.OnewayEnum;
-
+/**
+ * 规则属性映射<br/>
+ * 比如shapefile 里   width>10  osm里的字段值 highway=PRIMARY
+ * @author zhouchangjin
+ *
+ */
 public class RuleConfig {
 	
 	String type;

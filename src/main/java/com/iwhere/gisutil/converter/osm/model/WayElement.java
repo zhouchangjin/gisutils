@@ -7,7 +7,13 @@ import com.iwhere.gisutil.converter.osm.model.names.CommonTagEnum;
 import com.iwhere.gisutil.converter.osm.model.names.FeatureClassEnum;
 import com.iwhere.gisutil.converter.osm.model.names.OnewayEnum;
 
-
+/**
+ * 对应osm文件中的way元素<br/>
+ * way对应shapefile里的点线面对象<br/>
+ * 对于Graphhopper来说，路网的主要数据要素类型是LineString<br/>
+ * @author zhouchangjin
+ *
+ */
 public class WayElement implements ISerializedString {
 
 	

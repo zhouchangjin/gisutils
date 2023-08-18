@@ -9,6 +9,11 @@ import com.iwhere.gisutil.converter.osm.model.NodeElement;
 import com.iwhere.gisutil.converter.osm.model.OSMDocument;
 import com.iwhere.gisutil.converter.osm.model.WayElement;
 
+/**
+ * 节省内存的拼写xml的文件类
+ * @author zhouchangjin
+ *
+ */
 public class SimpleOSMDocumentWriter implements IOSMDocumentWriter {
 	
 

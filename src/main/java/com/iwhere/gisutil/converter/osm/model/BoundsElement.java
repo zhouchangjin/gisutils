@@ -1,6 +1,10 @@
 package com.iwhere.gisutil.converter.osm.model;
-
-public class BoundsElement {
+/**
+ * 地图的范围属性
+ * @author zhouchangjin
+ *
+ */
+public class BoundsElement implements ISerializedString{
 	
 	double minlat;
 	double maxlat;
@@ -30,6 +34,11 @@ public class BoundsElement {
 	}
 	public void setMaxlon(double maxlon) {
 		this.maxlon = maxlon;
+	}
+	@Override
+	public String toXMLString() {
+		//TODO 未完成
+		return "";
 	}
 	
 	

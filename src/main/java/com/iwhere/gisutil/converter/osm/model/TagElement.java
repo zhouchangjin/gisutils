@@ -1,5 +1,10 @@
 package com.iwhere.gisutil.converter.osm.model;
-
+/**
+ * 对应osm中的<tag></tag>对象
+ * 其中tag对应的是shapefile的属性列  key=value
+ * @author zhouchangjin
+ *
+ */
 public class TagElement implements ISerializedString {
 	
 	String k; //key

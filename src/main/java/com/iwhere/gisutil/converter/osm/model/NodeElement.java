@@ -2,7 +2,11 @@ package com.iwhere.gisutil.converter.osm.model;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * 对应Openstreetmap osm文件中的<node>元素
+ * @author zhouchangjin
+ *
+ */
 public class NodeElement implements ISerializedString{
 	
 	String id;

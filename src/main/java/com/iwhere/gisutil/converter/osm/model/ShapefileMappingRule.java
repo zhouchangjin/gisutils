@@ -5,7 +5,15 @@ import java.util.List;
 
 import com.iwhere.gisutil.converter.osm.model.names.FeatureClassEnum;
 import com.iwhere.gisutil.converter.osm.model.names.OnewayEnum;
-
+/**
+ * shapefile和osm文件字段的映射规则，其中osm必须的字段为<br/>
+ * name 道路或对象名称 <br/>
+ * highway 如果是路网，必须有此字段表示道路类型 <br/>
+ * oneway 如果是路网 建议有此字段 表示道路是双向 正向 逆向（Linestring方向）<br/>
+ * 其他字段可选 <br/>
+ * @author zhouchangjin
+ *
+ */
 public class ShapefileMappingRule {
 	
 	String nameProperty;

@@ -67,6 +67,10 @@ public class TestShapefile2OSM {
 		rule.addOnewayRule(forward);
 		rule.addOnewayRule(back);
 		
+		prop.addImportAttribute("OBJECTID",
+				"KINDNUM","KIND","WIDTH",
+				"DIRECTION","FUNCCLASS","LENGTH",
+				"","");
 		
 		String osmfilePath="d:/";
 		String osmName="Fujian_Road_Network";
@@ -80,7 +84,7 @@ public class TestShapefile2OSM {
 	   
 	   for(int i=0;i<osmdocWriter.nodeCnt();i++) {
 			osmdocWriter.writeNode(i);
-		}
+	   }
 	   
 		for(int i=0;i<osmdocWriter.wayCnt();i++) {
 			osmdocWriter.writeWay(i);

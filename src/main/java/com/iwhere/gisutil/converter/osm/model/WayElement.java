@@ -84,7 +84,7 @@ public class WayElement implements ISerializedString {
 	}
 	
 	public void addOnewayTag(OnewayEnum onewy) {
-		  addTag(CommonTagEnum.ONEWAY_TAG.getTag(), onewy.name());
+		  addTag(CommonTagEnum.ONEWAY_TAG.getTag(), onewy.getType());
 	}
 	
 	public void addNameTag(String name) {

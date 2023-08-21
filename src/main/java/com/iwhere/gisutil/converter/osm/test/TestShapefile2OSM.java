@@ -57,7 +57,7 @@ public class TestShapefile2OSM {
 		back.setDataType("Integer");
 		back.setValueA(3);
 		back.setType("EQ");
-		back.setOneway(OnewayEnum.F);
+		back.setOneway(OnewayEnum.T);
 		
 		rule.addHighwayRule(primary);
 		rule.addHighwayRule(secondary);

@@ -43,7 +43,7 @@ public class ShapefilePropeties {
 		importAttributes.add(attributeName);
 	}
 	
-	public void addImportAttribute(String... attributes) {
+	public void addImportAttributes(String... attributes) {
 		importAttributes.addAll(Arrays.asList(attributes));
 	}
 	

@@ -20,8 +20,11 @@ public class TestShapefile2OSM {
 		rule.setNameProperty("CNAME");
 		rule.setHighwayProperty("WIDTH");
 		rule.setOnewayProperty("DIRECTION");
+		rule.setMaxspeedProperty("SPEEDCLASS");
+		
 		rule.setDefaultClass(FeatureClassEnum.PRIMARY);
 		rule.setDefaultDirection(OnewayEnum.B);
+		rule.setDefaultMaxSpeed("5km/h");
 		
 		RuleConfig primary=new RuleConfig();
 		primary.setDataType("Integer");
@@ -59,6 +62,55 @@ public class TestShapefile2OSM {
 		back.setType("EQ");
 		back.setOneway(OnewayEnum.T);
 		
+		RuleConfig speedClass1=new RuleConfig();
+		speedClass1.setDataType("Integer");
+		speedClass1.setValueA(1);
+		speedClass1.setType("EQ");
+		speedClass1.setMapValue("200km/h");
+		
+		
+		RuleConfig speedClass2=new RuleConfig();
+		speedClass2.setDataType("Integer");
+		speedClass2.setValueA(2);
+		speedClass2.setType("EQ");
+		speedClass2.setMapValue("130km/h");
+		
+		RuleConfig speedClass3=new RuleConfig();
+		speedClass3.setDataType("Integer");
+		speedClass3.setValueA(3);
+		speedClass3.setType("EQ");
+		speedClass3.setMapValue("100km/h");
+		
+		RuleConfig speedClass4=new RuleConfig();
+		speedClass4.setDataType("Integer");
+		speedClass4.setValueA(4);
+		speedClass4.setType("EQ");
+		speedClass4.setMapValue("90km/h");
+		
+		RuleConfig speedClass5=new RuleConfig();
+		speedClass5.setDataType("Integer");
+		speedClass5.setValueA(5);
+		speedClass5.setType("EQ");
+		speedClass5.setMapValue("70km/h");
+		
+		RuleConfig speedClass6=new RuleConfig();
+		speedClass6.setDataType("Integer");
+		speedClass6.setValueA(6);
+		speedClass6.setType("EQ");
+		speedClass6.setMapValue("50km/h");
+		
+		RuleConfig speedClass7=new RuleConfig();
+		speedClass7.setDataType("Integer");
+		speedClass7.setValueA(7);
+		speedClass7.setType("EQ");
+		speedClass7.setMapValue("30km/h");
+		
+		RuleConfig speedClass8=new RuleConfig();
+		speedClass8.setDataType("Integer");
+		speedClass8.setValueA(8);
+		speedClass8.setType("EQ");
+		speedClass8.setMapValue("11km/h");
+		
 		rule.addHighwayRule(primary);
 		rule.addHighwayRule(secondary);
 		rule.addHighwayRule(third);
@@ -66,15 +118,24 @@ public class TestShapefile2OSM {
 		rule.addOnewayRule(forward);
 		rule.addOnewayRule(back);
 		
-		prop.addImportAttribute("OBJECTID",
+		rule.addMaxSpeedRule(speedClass1);
+		rule.addMaxSpeedRule(speedClass2);
+		rule.addMaxSpeedRule(speedClass3);
+		rule.addMaxSpeedRule(speedClass4);
+		rule.addMaxSpeedRule(speedClass5);
+		rule.addMaxSpeedRule(speedClass6);
+		rule.addMaxSpeedRule(speedClass7);
+		rule.addMaxSpeedRule(speedClass8);
+		
+		prop.addImportAttributes("OBJECTID",
 				"KINDNUM","KIND","WIDTH",
-				"DIRECTION","FUNCCLASS","LENGTH",
-				"SPEEDCLASS","TOLL","OWNERSHIP",
+				"FUNCCLASS","LENGTH",
+				"TOLL","OWNERSHIP",
 				"FORM","ELEVATED","UFLAG",
 				"CLASID");
 		
-		String osmfilePath="d:/";
-		String osmName="Fujian_Road_Network";
+	   String osmfilePath="d:/";
+	   String osmName="Fujian_Road_Network";
 	   SimpleOSMDocumentWriter osmdocWriter=new SimpleOSMDocumentWriter(osmfilePath,osmName);
 	   osmdocWriter.initialize();
 	   osmdocWriter.open();

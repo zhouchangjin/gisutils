@@ -75,6 +75,10 @@ public class WayElement implements ISerializedString {
 		this.timestamp = timestamp;
 	}
 	
+	public void addMaxSpeedTag(String value) {
+		addTag(CommonTagEnum.MAXSPEED_TAG.getTag(), value);
+	}
+	
 	public void addHighwayClassTag(FeatureClassEnum classType) {
 		addTag(CommonTagEnum.HIGHWAY_TAG.getTag(), classType.getFClass());
 	}

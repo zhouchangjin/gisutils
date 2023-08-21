@@ -175,6 +175,19 @@ public class Shape2OSM {
 		        }
 				osm.addWay(way);
 				
+				String maxSpeedPro=rule.getMaxspeedProperty();
+				Object maxSpeedValue=feature.getAttribute(maxSpeedPro);
+				List<RuleConfig> speedRuleConfigs=rule.getMaxspeedRules();
+				if(maxSpeedValue!=null && !maxSpeedValue.toString().equals("")) {
+					RuleConfig config=parseRules(speedRuleConfigs, maxSpeedValue.toString());
+					if(config==null) {
+						way.addMaxSpeedTag(rule.getDefaultMaxSpeed());
+					}else {
+					    way.addMaxSpeedTag(config.getMapValue());
+					}
+				}
+				
+				
 				List<String> attributes=prop.getAttributes();
 				for(String attrName:attributes) {
 					  Object attrVal=feature.getAttribute(attrName);

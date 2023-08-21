@@ -15,16 +15,32 @@ import com.iwhere.gisutil.converter.osm.model.names.OnewayEnum;
  *
  */
 public class ShapefileMappingRule {
-	
+	/**
+	 * name 对应shapefile属性
+	 */
 	String nameProperty;
-	
+	/**
+	 * oneway 对应shapefile属性
+	 */
 	String onewayProperty;
-	
+	/**
+	 * highway 对应shapefile属性
+	 */
 	String highwayProperty;
+	
+	/**
+	 * maxspeed 对应shapefile属性
+	 */
+	String maxspeedProperty;
 	
 	List<RuleConfig> highwayRules;
 	
 	List<RuleConfig> onewayRules;
+	
+	List<RuleConfig> maxspeedRules;
+	
+
+	String defaultMaxSpeed;
 	
 	FeatureClassEnum defaultClass;
 	
@@ -33,9 +49,30 @@ public class ShapefileMappingRule {
 	public ShapefileMappingRule() {
 		highwayRules=new ArrayList<RuleConfig>();
 		onewayRules=new ArrayList<RuleConfig>();
+		maxspeedRules=new ArrayList<RuleConfig>();
 	}
 	
 	
+	public String getDefaultMaxSpeed() {
+		return defaultMaxSpeed;
+	}
+
+
+	public void setDefaultMaxSpeed(String defaultMaxSpeed) {
+		this.defaultMaxSpeed = defaultMaxSpeed;
+	}
+
+
+	public String getMaxspeedProperty() {
+		return maxspeedProperty;
+	}
+
+
+	public void setMaxspeedProperty(String maxspeedProperty) {
+		this.maxspeedProperty = maxspeedProperty;
+	}
+
+
 	public FeatureClassEnum getDefaultClass() {
 		return defaultClass;
 	}
@@ -54,6 +91,10 @@ public class ShapefileMappingRule {
 	public void setDefaultDirection(OnewayEnum defaultDirection) {
 		this.defaultDirection = defaultDirection;
 	}
+	
+	public void addMaxSpeedRule(RuleConfig config) {
+		maxspeedRules.add(config);
+	}
 
 
 	public void addHighwayRule(RuleConfig config) {
@@ -71,6 +112,10 @@ public class ShapefileMappingRule {
 	
 	public List<RuleConfig> getOnewayRules(){
 		return onewayRules;
+	}
+	
+	public List<RuleConfig> getMaxspeedRules(){
+		return maxspeedRules;
 	}
 
 	public String getNameProperty() {

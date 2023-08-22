@@ -75,6 +75,14 @@ public class WayElement implements ISerializedString {
 		this.timestamp = timestamp;
 	}
 	
+	public void addLaneTag(String value) {
+		addTag(CommonTagEnum.LANE_TAG.getTag(), value);
+	}
+	
+	public void addTollTag(String value) {
+		addTag(CommonTagEnum.TOLL_TAG.getTag(), value);
+	}
+	
 	public void addMaxSpeedTag(String value) {
 		addTag(CommonTagEnum.MAXSPEED_TAG.getTag(), value);
 	}

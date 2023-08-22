@@ -14,7 +14,9 @@ public enum CommonTagEnum {
 	MAXSPEED_TAG("maxspeed"),
 	HIGHWAY_TAG("highway"),
 	NAME_TAG("name"),
-	ONEWAY_TAG("oneway");
+	ONEWAY_TAG("oneway"),
+	TOLL_TAG("toll"),
+	LANE_TAG("lanes");
 	
 	private String tag;
 	

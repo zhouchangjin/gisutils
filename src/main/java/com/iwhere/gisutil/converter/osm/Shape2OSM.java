@@ -175,6 +175,7 @@ public class Shape2OSM {
 		        }
 				osm.addWay(way);
 				
+				//映射maxspeed
 				String maxSpeedPro=rule.getMaxspeedProperty();
 				Object maxSpeedValue=feature.getAttribute(maxSpeedPro);
 				List<RuleConfig> speedRuleConfigs=rule.getMaxspeedRules();
@@ -187,6 +188,27 @@ public class Shape2OSM {
 					}
 				}
 				
+				//映射toll 收费
+				String tollProp=rule.getTollProperty();
+				Object tollValue=feature.getAttribute(tollProp);
+				List<RuleConfig> tollConfigs=rule.getTollRules();
+				if(tollValue!=null && !tollValue.toString().equals("")) {
+					RuleConfig config=parseRules(tollConfigs, tollValue.toString());
+					if(config!=null) {
+						way.addTollTag(config.getMapValue());
+					}
+				}
+				
+				//映射lane 车道数量
+				String laneProp=rule.getLaneProperty();
+				Object laneValue=feature.getAttribute(laneProp);
+				List<RuleConfig> laneConfig=rule.getLaneRules();
+				if(laneValue!=null && !laneValue.toString().equals("")) {
+					RuleConfig config=parseRules(laneConfig, laneValue.toString());
+					if(config!=null) {
+						way.addLaneTag(config.getMapValue());
+					}
+				}
 				
 				List<String> attributes=rule.getAttributes();
 				for(String attrName:attributes) {

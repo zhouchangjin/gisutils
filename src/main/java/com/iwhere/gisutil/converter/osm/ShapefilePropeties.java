@@ -14,10 +14,7 @@ public class ShapefilePropeties {
 	String filePath;
 	String charset="GBK";
 	
-	List<String> importAttributes;
-	
 	public ShapefilePropeties() {
-		importAttributes=new ArrayList<String>();
 	}
 	
 	public String getCharset() {
@@ -38,17 +35,6 @@ public class ShapefilePropeties {
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
 	}
-	
-	public void addImportAttribute(String attributeName) {
-		importAttributes.add(attributeName);
-	}
-	
-	public void addImportAttributes(String... attributes) {
-		importAttributes.addAll(Arrays.asList(attributes));
-	}
-	
-	public List<String> getAttributes(){
-		return importAttributes;
-	}
+
 
 }

@@ -188,7 +188,7 @@ public class Shape2OSM {
 				}
 				
 				
-				List<String> attributes=prop.getAttributes();
+				List<String> attributes=rule.getAttributes();
 				for(String attrName:attributes) {
 					  Object attrVal=feature.getAttribute(attrName);
 					  if(attrVal!=null) {

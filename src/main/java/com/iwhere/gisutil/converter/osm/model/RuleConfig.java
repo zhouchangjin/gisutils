@@ -110,6 +110,14 @@ public class RuleConfig {
 		this.value = value;
 	}
 	
-	
+	public String toString() {
+		if(dataType.equals("Integer")) {
+			return " if val"+type+valueA+" then "+getFclass()+"|"+getOneway()+"|"+getMapValue();
+		}else if(dataType.equals("Double")) {
+			return "val"+type+dvalueA+" then "+getFclass()+"|"+getOneway()+"|"+getMapValue();
+		}else {
+			return "val"+type+value+" then "+getFclass()+"|"+getOneway()+"|"+getMapValue();
+		}
+	}
 
 }

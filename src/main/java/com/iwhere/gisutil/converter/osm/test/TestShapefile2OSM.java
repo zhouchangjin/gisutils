@@ -127,7 +127,7 @@ public class TestShapefile2OSM {
 		rule.addMaxSpeedRule(speedClass7);
 		rule.addMaxSpeedRule(speedClass8);
 		
-		prop.addImportAttributes("OBJECTID",
+		rule.addImportAttributes("OBJECTID",
 				"KINDNUM","KIND","WIDTH",
 				"FUNCCLASS","LENGTH",
 				"TOLL","OWNERSHIP",

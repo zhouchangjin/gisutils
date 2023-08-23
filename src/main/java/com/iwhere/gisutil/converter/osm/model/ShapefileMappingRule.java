@@ -364,6 +364,10 @@ public class ShapefileMappingRule {
 		sb.append(System.lineSeparator());
 		sb.append(" maxspeed='"+maxspeedProperty+"'");
 		sb.append(System.lineSeparator());
+		sb.append(" tolls='"+tollProperty+"'");
+		sb.append(System.lineSeparator());
+		sb.append(" lanes='"+laneProperty+"'");
+		sb.append(System.lineSeparator());
 		sb.append(" default_roadclass='"+defaultClass.getFClass()+"'");
 		sb.append(System.lineSeparator());
 		sb.append(" default_direction='"+defaultDirection.getType()+"'");

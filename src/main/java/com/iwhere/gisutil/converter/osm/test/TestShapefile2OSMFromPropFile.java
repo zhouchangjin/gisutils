@@ -20,7 +20,7 @@ public class TestShapefile2OSMFromPropFile {
 		ShapefilePropeties prop=new ShapefilePropeties();
 		prop.setCharset("GBK");
 		prop.setFileName("LRDL_道路");
-		prop.setFilePath("d:/");
+		prop.setFilePath("d:/地图数据/road/");
 		
 		   String osmfilePath="d:/";
 		   String osmName="Fujian_Road_Network";

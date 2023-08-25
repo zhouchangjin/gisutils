@@ -7,6 +7,8 @@ import com.iwhere.gisutil.converter.osm.model.names.CommonTagEnum;
 import com.iwhere.gisutil.converter.osm.model.names.FeatureClassEnum;
 import com.iwhere.gisutil.converter.osm.model.names.OnewayEnum;
 
+import javax.swing.text.html.HTML;
+
 /**
  * 对应osm文件中的way元素<br/>
  * way对应shapefile里的点线面对象<br/>
@@ -29,9 +31,35 @@ public class WayElement implements ISerializedString {
 		nodesRef=new ArrayList<Integer>();
 		taglist=new ArrayList<TagElement>();
 	}
+
+	private TagElement getHighwayTag(){
+          for(TagElement t:taglist){
+			  String key=t.getK();
+			  if(key!=null && key.equals(CommonTagEnum.HIGHWAY_TAG.getTag())){
+				  return t;
+			  }
+		  }
+		  return null;
+	}
 	
 	public void AddTag(TagElement tag) {
 		taglist.add(tag);
+	}
+
+	public void addOrUpdateHighwayTag(FeatureClassEnum classType){
+		TagElement highwayTag=getHighwayTag();
+		if(highwayTag==null){
+			addHighwayClassTag(classType);
+		}else{
+			highwayTag.setV(classType.getFClass());
+		}
+	}
+
+	public void updateHighwayTag(FeatureClassEnum classType){
+			TagElement highwayTag=getHighwayTag();
+			if(highwayTag!=null){
+				highwayTag.setV(classType.getFClass());
+			}
 	}
 	
 	public void addTag(String k,String v) {

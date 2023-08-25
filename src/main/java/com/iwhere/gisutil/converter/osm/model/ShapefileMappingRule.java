@@ -1,10 +1,10 @@
 package com.iwhere.gisutil.converter.osm.model;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,8 +12,11 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.iwhere.gisutil.converter.osm.model.names.CommonTagEnum;
 import com.iwhere.gisutil.converter.osm.model.names.FeatureClassEnum;
 import com.iwhere.gisutil.converter.osm.model.names.OnewayEnum;
+import com.iwhere.gisutil.converter.osm.model.names.OpEnum;
+
 /**
  * shapefile和osm文件字段的映射规则，其中osm必须的字段为<br/>
  * name 道路或对象名称 <br/>
@@ -24,8 +27,15 @@ import com.iwhere.gisutil.converter.osm.model.names.OnewayEnum;
  *
  */
 public class ShapefileMappingRule {
-	
+	/**
+	 * 最多单字段规则数量
+	 */
 	static int MAX_RULE_CNT=20;
+
+	/**
+	 * 最多通用规则数量
+	 */
+	static int MAX_GENERIC_RULE_CNT=1000;
 	
 	/**
 	 * 要素名称
@@ -71,6 +81,12 @@ public class ShapefileMappingRule {
 	
 	List<RuleConfig> laneRules;
 
+	List<MappingRuleConfig<Integer>> intRules;
+
+	List<MappingRuleConfig<Double>> doubleRules;
+
+	List<MappingRuleConfig<String>> stringRules;
+
 	String defaultMaxSpeed;
 	
 	FeatureClassEnum defaultClass;
@@ -78,14 +94,31 @@ public class ShapefileMappingRule {
 	OnewayEnum defaultDirection; 
 	
 	List<String> importAttributes;
+
+
 	
 	public ShapefileMappingRule() {
-		highwayRules=new ArrayList<RuleConfig>();
-		onewayRules=new ArrayList<RuleConfig>();
-		maxspeedRules=new ArrayList<RuleConfig>();
-		tollRules=new ArrayList<RuleConfig>();
-		laneRules=new ArrayList<RuleConfig>();
-		importAttributes=new ArrayList<String>();
+		highwayRules=new ArrayList<>();
+		onewayRules=new ArrayList<>();
+		maxspeedRules=new ArrayList<>();
+		tollRules=new ArrayList<>();
+		laneRules=new ArrayList<>();
+		importAttributes=new ArrayList<>();
+		intRules=new ArrayList<>();
+		doubleRules=new ArrayList<>();
+		stringRules=new ArrayList<>();
+	}
+
+	public void addIntRule(MappingRuleConfig<Integer> config){
+		intRules.add(config);
+	}
+
+	public void addDblRule(MappingRuleConfig<Double> config){
+		doubleRules.add(config);
+	}
+
+	public void addStrRules(MappingRuleConfig<String> config){
+		stringRules.add(config);
 	}
 
 	public void addImportAttribute(String attributeName) {
@@ -225,6 +258,87 @@ public class ShapefileMappingRule {
 		this.tollProperty = tollProperty;
 	}
 
+	public List<MappingRuleConfig<Integer>> getIntRules() {
+		return intRules;
+	}
+
+	public List<MappingRuleConfig<Double>> getDoubleRules() {
+		return doubleRules;
+	}
+
+	public List<MappingRuleConfig<String>> getStringRules() {
+		return stringRules;
+	}
+
+	private  static <T extends Comparable<T>>void loadRules(MappingRuleConfig<T> config, Properties prop){
+		 String rulePrefix=config.getTargetTag();
+		for(int i=0;i<MAX_RULE_CNT;i++) {
+				String propName=rulePrefix+".rule["+i+"]";
+				String expProp=propName+".exp";
+				String valProp=propName+".val";
+				if(prop.containsKey(expProp)) {
+					String exp=prop.getProperty(expProp);
+					String val=prop.getProperty(valProp);
+					GenericRuleConfig<T> gRuleConfig=new GenericRuleConfig<>();
+					gRuleConfig.setMapValue(val);
+					parseRuleExp(exp,gRuleConfig);
+
+				}else{
+					break;
+				}
+		}
+	}
+
+	private static void parseMappingRule(ShapefileMappingRule rule,Properties prop){
+
+		for(int i=0;i<MAX_GENERIC_RULE_CNT;i++){
+			String rulePre="rule["+i+"].";
+			String propNameKey=rulePre+"prop";
+			String tagNameKey=rulePre+"tag";
+			String defaultValueKey=rulePre+"defaultValue";
+			String factorKey=rulePre+"factor";
+			if(!prop.containsKey(propNameKey)){
+				break;
+			}
+
+			String propName=prop.getProperty(propNameKey);
+			String tagName=prop.getProperty(tagNameKey);
+			String defaultValue=prop.getProperty(defaultValueKey);
+			String factorStr=prop.getProperty(factorKey);
+			float factor=1.0f;
+			if(factorStr!=null && !factorStr.equals("")){
+				factor=Float.parseFloat(factorStr);
+			}
+
+			MappingRuleConfigBuilder builder=new MappingRuleConfigBuilder(propName)
+					.setTargetTag(tagName)
+					.withDefaultValue(defaultValue)
+					.multiBy(factor);
+
+			String intExp="[+-]?[0-9]+";
+			String floatExp="[+-]?[0-9]+\\.[0-9]+";
+			if(defaultValue.matches(intExp)){
+				Integer intValue=Integer.parseInt(defaultValue);
+				MappingRuleConfig<Integer> ruleConfig=builder.build(intValue);
+				loadRules(ruleConfig,prop);
+				rule.addIntRule(ruleConfig);
+
+			}else if(defaultValue.matches(floatExp)){
+				Double doubleValue=Double.parseDouble(defaultValue);
+				MappingRuleConfig<Double> ruleConfig=builder.build(doubleValue);
+				loadRules(ruleConfig,prop);
+				rule.addDblRule(ruleConfig);
+			}else{
+				MappingRuleConfig<String> ruleConfig=builder.build(defaultValue);
+				loadRules(ruleConfig,prop);
+				rule.addStrRules(ruleConfig);
+			}
+
+		}
+
+	}
+
+
 	private static void parseRule(String ruleType,ShapefileMappingRule rule,Properties prop) {
 		for(int i=0;i<MAX_RULE_CNT;i++) {
 			String propName=ruleType+".rule["+i+"]";
@@ -262,7 +376,43 @@ public class ShapefileMappingRule {
 			}
 		}
 	}
-	
+
+	private static <T extends Comparable<T>>void parseRuleExp(String exp,GenericRuleConfig<T> config){
+		String patternExp="\\s*val\\s*([><=]=?)\\s*([0-9]+\\.?[0-9]*)\\s*";
+		Pattern p=Pattern.compile(patternExp);
+		Matcher m=p.matcher(exp);
+		if(m.find()){
+			String oper=m.group(1).trim();
+			String val=m.group(2).trim();
+			if(oper.equals("=")){
+				config.setOperation(OpEnum.EQ);
+			}else if(oper.equals("<")){
+				config.setOperation(OpEnum.LT);
+			}else if(oper.equals(">")){
+				config.setOperation(OpEnum.GT);
+			}else if(oper.equals(">=")){
+				config.setOperation(OpEnum.GTE);
+			}else if(oper.equals("<=")){
+				config.setOperation(OpEnum.LTE);
+			}
+			try {
+				Field field=GenericRuleConfig.class.getField("compareValue");
+				Object fieldObj=field.get(config);
+				if(fieldObj instanceof String){
+					config.setCompareValue((T)val);
+				}else if(fieldObj instanceof Integer){
+					config.setCompareValue((T)Integer.valueOf(Integer.parseInt(val)));
+				}else if(fieldObj instanceof Double){
+					config.setCompareValue((T)Double.valueOf(Double.parseDouble(val)));
+				}
+			}  catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
+			} catch (NoSuchFieldException e) {
+				throw new RuntimeException(e);
+			}
+
+		}
+	}
 	
 	private static void parseRuleExp(String exp,RuleConfig config) {
 		String patternExp="val([^0-9]*)([0-9]+)";
@@ -335,6 +485,8 @@ public class ShapefileMappingRule {
 		String arrayStr=prop.getProperty("import_attributes");
 		String[] attrs=arrayStr.split(",");
 		rule.addImportAttributes(attrs);
+
+		parseMappingRule(rule,prop);
 		
 		System.out.println(rule);
 		return rule;
@@ -355,36 +507,36 @@ public class ShapefileMappingRule {
 	public String toString() {
 		StringBuilder sb=new StringBuilder();
 		sb.append("{").append(System.lineSeparator());
-		sb.append(" name='"+nameProperty);
+		sb.append(" name='").append(nameProperty);
 		sb.append("'");
 		sb.append(System.lineSeparator());
-		sb.append(" roadclass='"+highwayProperty+"'");
+		sb.append(" roadclass='").append(highwayProperty).append("'");
 		sb.append(System.lineSeparator());
-		sb.append(" oneway='"+onewayProperty+"'");
+		sb.append(" oneway='").append(onewayProperty).append("'");
 		sb.append(System.lineSeparator());
-		sb.append(" maxspeed='"+maxspeedProperty+"'");
+		sb.append(" maxspeed='").append(maxspeedProperty).append("'");
 		sb.append(System.lineSeparator());
-		sb.append(" tolls='"+tollProperty+"'");
+		sb.append(" tolls='").append(tollProperty).append("'");
 		sb.append(System.lineSeparator());
-		sb.append(" lanes='"+laneProperty+"'");
+		sb.append(" lanes='").append(laneProperty).append("'");
 		sb.append(System.lineSeparator());
-		sb.append(" default_roadclass='"+defaultClass.getFClass()+"'");
+		sb.append(" default_roadclass='").append(defaultClass.getFClass()).append("'");
 		sb.append(System.lineSeparator());
-		sb.append(" default_direction='"+defaultDirection.getType()+"'");
+		sb.append(" default_direction='").append(defaultDirection.getType()).append("'");
 		sb.append(System.lineSeparator());
-		sb.append(" default_maxspeed='"+defaultMaxSpeed+"'");
+		sb.append(" default_maxspeed='").append(defaultMaxSpeed).append("'");
 		sb.append(System.lineSeparator());
-		sb.append(" import_attributes='"+importAttributes.toString()+"'");
+		sb.append(" import_attributes='").append(importAttributes.toString()).append("'");
 		sb.append(System.lineSeparator());
-		sb.append(" roadRule="+highwayRules.toString());
+		sb.append(" roadRule=").append(highwayRules.toString());
 		sb.append(System.lineSeparator());
-		sb.append(" onewayRule="+onewayRules.toString());
+		sb.append(" onewayRule=").append(onewayRules.toString());
 		sb.append(System.lineSeparator());
-		sb.append(" speedRule="+maxspeedRules.toString());
+		sb.append(" speedRule=").append(maxspeedRules.toString());
 		sb.append(System.lineSeparator());
-		sb.append(" tollRule="+tollRules.toString());
+		sb.append(" tollRule=").append(tollRules.toString());
 		sb.append(System.lineSeparator());
-		sb.append(" laneRule="+laneRules.toString());
+		sb.append(" laneRule=").append(laneRules.toString());
 		sb.append(System.lineSeparator());
 		sb.append("}");
 		return sb.toString();

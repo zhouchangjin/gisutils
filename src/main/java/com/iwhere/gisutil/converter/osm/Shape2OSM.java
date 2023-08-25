@@ -4,10 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.iwhere.gisutil.converter.osm.model.*;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.FeatureSource;
@@ -19,10 +21,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import com.iwhere.gisutil.converter.osm.model.OSMDocument;
-import com.iwhere.gisutil.converter.osm.model.RuleConfig;
-import com.iwhere.gisutil.converter.osm.model.ShapefileMappingRule;
-import com.iwhere.gisutil.converter.osm.model.WayElement;
 /**
  * Shapefile 路网转换为OSM路网
  * @author zhouchangjin
@@ -153,10 +151,9 @@ public class Shape2OSM {
 		        if(widthStr!=null && !widthStr.toString().equals("")) {
 		        	  RuleConfig config=  parseRules(hrules, widthStr.toString());
 		        	  if(config==null) {
-		        		  way.addHighwayClassTag(rule.getDefaultClass());
+						  way.addOrUpdateHighwayTag(rule.getDefaultClass());
 		        	  }else {
-		        		  //System.out.println(config.getFclass());
-			        	  way.addHighwayClassTag(config.getFclass());  
+						  way.addOrUpdateHighwayTag(config.getFclass());
 		        	  }
 		        }
 		        
@@ -169,7 +166,6 @@ public class Shape2OSM {
 		        	   if(config==null) {
 		        		   way.addOnewayTag(rule.getDefaultDirection());
 		        	   }else {
-		        		   //System.out.println(config.getOneway());
 			        	   way.addOnewayTag(config.getOneway());
 		        	   }
 		        }
@@ -217,6 +213,51 @@ public class Shape2OSM {
 						  way.addTag(attrName, attrVal.toString());
 					  }
 				      //osm为可变字段，空值可以不要
+				}
+
+				for(MappingRuleConfig<Integer> intRule:rule.getIntRules()){
+					if(intRule.getRules().size()==0){
+						String tagName=intRule.getTargetTag();
+						String shpProp=intRule.getProperty();
+						Object attrVal=feature.getAttribute(shpProp);
+						if(attrVal!=null && !attrVal.toString().equals("")){
+							int intValue=Integer.parseInt(attrVal.toString());
+							intValue=Math.round(intValue*intRule.getFactor());
+							way.addTag(tagName,intValue+"");
+						}else{
+							way.addTag(tagName,intRule.getDefaultValue());
+						}
+					}
+				}
+
+				for(MappingRuleConfig<Double> dblRule:rule.getDoubleRules()){
+					if(dblRule.getRules().size()==0){
+						String tagName=dblRule.getTargetTag();
+						String shpProp=dblRule.getProperty();
+						Object attrVal=feature.getAttribute(shpProp);
+						if(attrVal!=null && !attrVal.toString().equals("")){
+							double dblValue=Double.parseDouble(attrVal.toString());
+							dblValue=dblValue*dblRule.getFactor();
+							DecimalFormat decimalFormat = new DecimalFormat("#.00");
+							String dblStr = decimalFormat.format(dblValue);
+							way.addTag(tagName,dblStr);
+						}else{
+							way.addTag(tagName,dblRule.getDefaultValue());
+						}
+					}
+				}
+
+				for(MappingRuleConfig<String> strRule:rule.getStringRules()){
+					if(strRule.getRules().size()==0){
+						String tagName=strRule.getTargetTag();
+						String shpProp=strRule.getProperty();
+						Object attrVal=feature.getAttribute(shpProp);
+						if(attrVal!=null && !attrVal.toString().equals("")){
+							way.addTag(tagName,attrVal.toString());
+						}else{
+							way.addTag(tagName,strRule.getDefaultValue());
+						}
+					}
 				}
 
 			}

@@ -16,7 +16,9 @@ public enum CommonTagEnum {
 	NAME_TAG("name"),
 	ONEWAY_TAG("oneway"),
 	TOLL_TAG("toll"),
-	LANE_TAG("lanes");
+	LANE_TAG("lanes"),
+
+	WIDTH_TAG("width");
 	
 	private String tag;
 	

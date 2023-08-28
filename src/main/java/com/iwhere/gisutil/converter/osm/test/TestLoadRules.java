@@ -1,10 +1,17 @@
 package com.iwhere.gisutil.converter.osm.test;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.iwhere.gisutil.converter.osm.model.GenericRuleConfig;
 import com.iwhere.gisutil.converter.osm.model.ShapefileMappingRule;
 
 public class TestLoadRules {
@@ -27,6 +34,9 @@ public class TestLoadRules {
 		System.out.println("10+22".matches(floatExp));
 		System.out.println("-10.22".matches(floatExp));
 		**/
+
+
+		/**
 		String reg="\\s*";
 		System.out.println(" ".matches(reg));
 		String exp=" val >= 12.3 ";
@@ -40,6 +50,39 @@ public class TestLoadRules {
 			System.out.println(oper);
 			System.out.println(val);
 		}
+		 **/
+		/**
+		String code="123";
+		System.out.println(code.compareTo("121"));
+		 **/
+
+		System.out.println(Integer.valueOf(-1).compareTo(1));
+		System.out.println(Double.valueOf(10.02).compareTo(10.21));
+		System.out.println(Integer.class.getName());
+
+		List<String> typename=new ArrayList<>();
+		Type t=typename.getClass();
+		System.out.println(t.getTypeName());
+
+		GenericRuleConfig<Integer> c=new GenericRuleConfig<>();
+		try {
+			Method m=c.getClass().getMethod("getCompareValue");
+			c.setCompareValue(1);
+
+			System.out.println("==="+m.getGenericReturnType().getTypeName());
+			Object returnObj=m.invoke(c);
+
+			System.out.println(returnObj.getClass().getName());
+			System.out.println(m.getGenericReturnType().getTypeName());
+
+		} catch (NoSuchMethodException e) {
+			throw new RuntimeException(e);
+		} catch (InvocationTargetException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+
 	}
 
 }

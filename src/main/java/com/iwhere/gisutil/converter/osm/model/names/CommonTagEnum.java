@@ -18,7 +18,9 @@ public enum CommonTagEnum {
 	TOLL_TAG("toll"),
 	LANE_TAG("lanes"),
 
-	WIDTH_TAG("width");
+	WIDTH_TAG("width"),
+
+	OWNERSHIP_TAG("ownership");
 	
 	private String tag;
 	

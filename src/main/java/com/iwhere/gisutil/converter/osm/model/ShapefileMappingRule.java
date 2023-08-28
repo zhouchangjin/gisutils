@@ -4,7 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +12,6 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.iwhere.gisutil.converter.osm.model.names.CommonTagEnum;
 import com.iwhere.gisutil.converter.osm.model.names.FeatureClassEnum;
 import com.iwhere.gisutil.converter.osm.model.names.OnewayEnum;
 import com.iwhere.gisutil.converter.osm.model.names.OpEnum;
@@ -282,6 +281,7 @@ public class ShapefileMappingRule {
 					GenericRuleConfig<T> gRuleConfig=new GenericRuleConfig<>();
 					gRuleConfig.setMapValue(val);
 					parseRuleExp(exp,gRuleConfig);
+					config.addRule(gRuleConfig);
 
 				}else{
 					break;
@@ -297,6 +297,8 @@ public class ShapefileMappingRule {
 			String tagNameKey=rulePre+"tag";
 			String defaultValueKey=rulePre+"defaultValue";
 			String factorKey=rulePre+"factor";
+			String dataTypeKey=rulePre+"dataType";
+
 			if(!prop.containsKey(propNameKey)){
 				break;
 			}
@@ -305,6 +307,8 @@ public class ShapefileMappingRule {
 			String tagName=prop.getProperty(tagNameKey);
 			String defaultValue=prop.getProperty(defaultValueKey);
 			String factorStr=prop.getProperty(factorKey);
+			String dataType=prop.getProperty(dataTypeKey);
+
 			float factor=1.0f;
 			if(factorStr!=null && !factorStr.equals("")){
 				factor=Float.parseFloat(factorStr);
@@ -314,22 +318,17 @@ public class ShapefileMappingRule {
 					.setTargetTag(tagName)
 					.withDefaultValue(defaultValue)
 					.multiBy(factor);
-
-			String intExp="[+-]?[0-9]+";
-			String floatExp="[+-]?[0-9]+\\.[0-9]+";
-			if(defaultValue.matches(intExp)){
-				Integer intValue=Integer.parseInt(defaultValue);
-				MappingRuleConfig<Integer> ruleConfig=builder.build(intValue);
+			if(dataType.equals("Integer")){
+				MappingRuleConfig<Integer> ruleConfig=builder.build(Integer.valueOf(0));
 				loadRules(ruleConfig,prop);
 				rule.addIntRule(ruleConfig);
 
-			}else if(defaultValue.matches(floatExp)){
-				Double doubleValue=Double.parseDouble(defaultValue);
-				MappingRuleConfig<Double> ruleConfig=builder.build(doubleValue);
+			}else if(dataType.equals("Double") || dataType.equals("Float")){
+				MappingRuleConfig<Double> ruleConfig=builder.build(Double.valueOf(0.0));
 				loadRules(ruleConfig,prop);
 				rule.addDblRule(ruleConfig);
 			}else{
-				MappingRuleConfig<String> ruleConfig=builder.build(defaultValue);
+				MappingRuleConfig<String> ruleConfig=builder.build("");
 				loadRules(ruleConfig,prop);
 				rule.addStrRules(ruleConfig);
 			}
@@ -395,22 +394,15 @@ public class ShapefileMappingRule {
 			}else if(oper.equals("<=")){
 				config.setOperation(OpEnum.LTE);
 			}
-			try {
-				Field field=GenericRuleConfig.class.getField("compareValue");
-				Object fieldObj=field.get(config);
-				if(fieldObj instanceof String){
-					config.setCompareValue((T)val);
-				}else if(fieldObj instanceof Integer){
-					config.setCompareValue((T)Integer.valueOf(Integer.parseInt(val)));
-				}else if(fieldObj instanceof Double){
-					config.setCompareValue((T)Double.valueOf(Double.parseDouble(val)));
-				}
-			}  catch (IllegalAccessException e) {
-				throw new RuntimeException(e);
-			} catch (NoSuchFieldException e) {
-				throw new RuntimeException(e);
+			String intExp="[+-]?[0-9]+";
+			String floatExp="[+-]?[0-9]+\\.[0-9]+";
+			if(val.matches(intExp)){
+				config.setCompareValue((T)Integer.valueOf(Integer.parseInt(val)));
+			}else if(val.matches(floatExp)){
+				config.setCompareValue((T)Double.valueOf(Double.parseDouble(val)));
+			}else{
+				config.setCompareValue((T)val);
 			}
-
 		}
 	}
 	

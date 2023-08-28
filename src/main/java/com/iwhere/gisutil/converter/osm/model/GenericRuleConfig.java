@@ -1,6 +1,9 @@
 package com.iwhere.gisutil.converter.osm.model;
 
+import com.iwhere.gisutil.converter.osm.model.names.DataType;
 import com.iwhere.gisutil.converter.osm.model.names.OpEnum;
+
+import java.lang.reflect.Field;
 
 public class GenericRuleConfig<T extends Comparable<T>> {
 	
@@ -10,6 +13,11 @@ public class GenericRuleConfig<T extends Comparable<T>> {
 	 * 属性比较运算
 	 */
 	OpEnum operation;
+
+	/**
+	 * 数据类型
+	 */
+	DataType dataType;
 	
 	/**
 	 * 映射目标tag值
@@ -56,6 +64,13 @@ public class GenericRuleConfig<T extends Comparable<T>> {
 
 	public void setCompareValue2(T compareValue2) {
 		this.compareValue2 = compareValue2;
-	}	
+	}
 
+	public DataType getDataType() {
+		return dataType;
+	}
+
+	public void setDataType(DataType dataType) {
+		this.dataType = dataType;
+	}
 }

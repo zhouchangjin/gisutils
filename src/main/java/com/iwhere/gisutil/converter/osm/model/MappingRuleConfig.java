@@ -41,7 +41,7 @@ public class MappingRuleConfig <T extends Comparable<T>>{
 		return rules;
 	}
 	
-	public void addRules(GenericRuleConfig<T> rule) {
+	public void addRule(GenericRuleConfig<T> rule) {
 		rules.add(rule);
 	}
 

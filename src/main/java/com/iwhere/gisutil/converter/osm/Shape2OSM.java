@@ -2,7 +2,6 @@ package com.iwhere.gisutil.converter.osm;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -10,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.iwhere.gisutil.converter.osm.model.*;
+import com.iwhere.gisutil.converter.osm.model.names.OpEnum;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.FeatureSource;
@@ -29,32 +29,16 @@ import org.opengis.feature.simple.SimpleFeatureType;
 public class Shape2OSM {
 	
 	private static boolean CheckRules(RuleConfig config,String value) {
-		if(config.getValue().equals(value)) {
-			return true;
-		}else {
-			return false;
-		}
+		return config.getValue().equals(value);
 	}
 	
 	private static boolean CheckRules(RuleConfig config,int value) {
 	    if(config.getType().equals("EQ")) {
-	    	if(config.getValueA().equals(value)) {
-	    		return true;
-	    	}else {
-	    		return false;
-	    	}
+			return config.getValueA().equals(value);
 	    }else if(config.getType().equals("GT")) {
-	    	if(value>config.getValueA()) {
-	    		return true;
-	    	}else {
-	    		return false;
-	    	}
+			return value > config.getValueA();
 	    }else if(config.getType().equals("LT")) {
-	    	if(value<config.getValueA()) {
-	    		return true;
-	    	}else {
-	    		return false;
-	    	}
+			return value < config.getValueA();
 	    }else {
 	    	return false;
 	    }
@@ -62,26 +46,39 @@ public class Shape2OSM {
 	
 	private static boolean CheckRules(RuleConfig config,double value) {
 		    if(config.getType().equals("EQ")) {
-		    	if(config.getDvalueA().equals(value)) {
-		    		return true;
-		    	}else {
-		    		return false;
-		    	}
+				return config.getDvalueA().equals(value);
 		    }else if(config.getType().equals("GT")) {
-		    	if(value>config.getDvalueA()) {
-		    		return true;
-		    	}else {
-		    		return false;
-		    	}
+				return value > config.getDvalueA();
 		    }else if(config.getType().equals("LT")) {
-		    	if(value<config.getDvalueA()) {
-		    		return true;
-		    	}else {
-		    		return false;
-		    	}
+				return value < config.getDvalueA();
 		    }else {
 		    	return false;
 		    }
+	}
+
+	private static <T extends  Comparable<T>> boolean checkRule(GenericRuleConfig<T> rule,T value){
+		OpEnum op=rule.getOperation();
+		int compareValue=value.compareTo(rule.getCompareValue());
+		if(compareValue==0 && op.equals(OpEnum.EQ)){
+			return true;
+		}else if(compareValue<0 && op.equals(OpEnum.LT)){
+			return true;
+		}else if(compareValue>0 && op.equals(OpEnum.GT)){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	private  static <T extends Comparable<T>> GenericRuleConfig<T>
+	parseGenericRules(List<GenericRuleConfig<T>> rules, T value){
+		 for(GenericRuleConfig<T> rule:rules){
+			boolean successFlag=checkRule(rule,value);
+			if(successFlag){
+				return rule;
+			}
+		 }
+		return null;
 	}
 	
 	private static RuleConfig parseRules(List<RuleConfig> rules,String strValue) {
@@ -109,9 +106,9 @@ public class Shape2OSM {
 	}
 
 	public static void loadShapefile2OSM(ShapefilePropeties prop,ShapefileMappingRule rule, OSMDocument osm) {
-		String shapefilename = prop.getFilePath() + "" + prop.getFileName() + ".shp";
+		String shapefilename = prop.getFilePath() + prop.getFileName() + ".shp";
 		File shpFile = new File(shapefilename);
-		Map<String, Object> params = new HashMap<String, Object>();
+		Map<String, Object> params = new HashMap<>();
 		DataStore dataStore = null;
 		FeatureIterator<SimpleFeature> fit = null;
 		try {
@@ -216,46 +213,90 @@ public class Shape2OSM {
 				}
 
 				for(MappingRuleConfig<Integer> intRule:rule.getIntRules()){
-					if(intRule.getRules().size()==0){
-						String tagName=intRule.getTargetTag();
-						String shpProp=intRule.getProperty();
-						Object attrVal=feature.getAttribute(shpProp);
-						if(attrVal!=null && !attrVal.toString().equals("")){
-							int intValue=Integer.parseInt(attrVal.toString());
+					String tagName=intRule.getTargetTag();
+					String shpProp=intRule.getProperty();
+					Object attrVal=feature.getAttribute(shpProp);
+					int intValue=0;
+					boolean intValueSet=false;
+					if(attrVal!=null && !attrVal.toString().equals("")){
+						intValue=Integer.parseInt(attrVal.toString());
+						if(Math.abs(intRule.getFactor()-1.0f)>0.001){
 							intValue=Math.round(intValue*intRule.getFactor());
-							way.addTag(tagName,intValue+"");
-						}else{
-							way.addTag(tagName,intRule.getDefaultValue());
+						}
+						intValueSet=true;
+					}else if(intRule.isHasDefaultValue()){
+						intValue=Integer.parseInt(intRule.getDefaultValue());
+						intValueSet=true;
+					}
+					if(intRule.getRules().size()==0){
+						if(intValueSet){
+							way.addOrUpdateTag(tagName, String.valueOf(intValue));
+						}
+					}else{
+						if(intValueSet){
+							GenericRuleConfig<Integer> grule=parseGenericRules(intRule.getRules(),intValue);
+							if(grule!=null){
+								way.addOrUpdateTag(tagName,grule.getMapValue());
+							}
 						}
 					}
 				}
 
 				for(MappingRuleConfig<Double> dblRule:rule.getDoubleRules()){
-					if(dblRule.getRules().size()==0){
-						String tagName=dblRule.getTargetTag();
-						String shpProp=dblRule.getProperty();
-						Object attrVal=feature.getAttribute(shpProp);
-						if(attrVal!=null && !attrVal.toString().equals("")){
-							double dblValue=Double.parseDouble(attrVal.toString());
+					String tagName=dblRule.getTargetTag();
+					String shpProp=dblRule.getProperty();
+					Object attrVal=feature.getAttribute(shpProp);
+					double dblValue=0.0;
+					boolean dblValueSet=false;
+					if(attrVal!=null && !attrVal.toString().equals("")){
+						dblValue=Double.parseDouble(attrVal.toString());
+						if(Math.abs(dblRule.getFactor()-1.0)>0.001){
 							dblValue=dblValue*dblRule.getFactor();
+						}
+						dblValueSet=true;
+					}else if(dblRule.isHasDefaultValue()){
+						dblValue=Double.parseDouble(dblRule.getDefaultValue());
+						dblValueSet=true;
+					}
+					if(dblRule.getRules().size()==0){
+						if(dblValueSet){
 							DecimalFormat decimalFormat = new DecimalFormat("#.00");
 							String dblStr = decimalFormat.format(dblValue);
-							way.addTag(tagName,dblStr);
-						}else{
-							way.addTag(tagName,dblRule.getDefaultValue());
+							way.addOrUpdateTag(tagName,dblStr);
+						}
+					}else{
+						if(dblValueSet){
+							GenericRuleConfig<Double> gRule=parseGenericRules(dblRule.getRules(),dblValue);
+							if(gRule!=null){
+								way.addOrUpdateTag(tagName,gRule.getMapValue());
+							}
 						}
 					}
 				}
 
 				for(MappingRuleConfig<String> strRule:rule.getStringRules()){
+					String tagName=strRule.getTargetTag();
+					String shpProp=strRule.getProperty();
+					Object attrVal=feature.getAttribute(shpProp);
+					String strVal="";
+					boolean strValSet=false;
+					if(attrVal!=null && !attrVal.toString().equals("")){
+						strVal=attrVal.toString();
+						strValSet=true;
+					}else if(strRule.isHasDefaultValue()){
+						strVal=strRule.getDefaultValue();
+						strValSet=true;
+					}
 					if(strRule.getRules().size()==0){
-						String tagName=strRule.getTargetTag();
-						String shpProp=strRule.getProperty();
-						Object attrVal=feature.getAttribute(shpProp);
-						if(attrVal!=null && !attrVal.toString().equals("")){
-							way.addTag(tagName,attrVal.toString());
-						}else{
-							way.addTag(tagName,strRule.getDefaultValue());
+						if(strValSet){
+							way.addOrUpdateTag(tagName,strVal);
+						}
+					}else{
+						if(strValSet){
+							GenericRuleConfig<String> gRule=parseGenericRules(strRule.getRules(),strVal);
+							if(gRule!=null){
+								way.addOrUpdateTag(tagName,gRule.getMapValue());
+							}
 						}
 					}
 				}
@@ -263,11 +304,10 @@ public class Shape2OSM {
 			}
 			fit.close();
 			dataStore.dispose();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
+			assert fit != null;
 			fit.close();
 			dataStore.dispose();
 		}

@@ -48,8 +48,12 @@ public class MappingRuleConfigBuilder {
 	}
 	
 	public MappingRuleConfigBuilder withDefaultValue(String val) {
-		defaultValue=val;
-		hasDefaultValue=true;
+		if(defaultValue!=null && !defaultValue.equals("")){
+			defaultValue=val;
+			hasDefaultValue=true;
+		}else{
+			hasDefaultValue=false;
+		}
 		return this;
 	}
 	

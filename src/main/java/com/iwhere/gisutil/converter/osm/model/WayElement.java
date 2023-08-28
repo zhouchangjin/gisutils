@@ -41,9 +41,28 @@ public class WayElement implements ISerializedString {
 		  }
 		  return null;
 	}
+
+	private TagElement getTag(String tagName){
+		for(TagElement t:taglist){
+			String key=t.getK();
+			if(key!=null && key.equals(tagName)){
+				return t;
+			}
+		}
+		return null;
+	}
 	
-	public void AddTag(TagElement tag) {
+	public void addTag(TagElement tag) {
 		taglist.add(tag);
+	}
+
+	public void addOrUpdateTag(String k,String v){
+		TagElement element=getTag(k);
+		if(element!=null){
+			element.setV(v);
+		}else{
+			addTag(k,v);
+		}
 	}
 
 	public void addOrUpdateHighwayTag(FeatureClassEnum classType){

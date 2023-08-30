@@ -1,8 +1,8 @@
 package com.iwhere.gisutil.file;
 
-import org.apache.commons.io.FileExistsException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -47,7 +47,7 @@ public class FileUtil {
                     .forEach(res::append);
             return res.toString();
         }
-        throw new FileExistsException("文件不存在：" + path);
+        throw new FileNotFoundException();
     }
 
     /**

@@ -201,11 +201,11 @@ public class Shape2GeoJSON {
             transformShpToGeoJson(filePath,geojsonPath,"GBK");
             **/
 
-            /**
-            String geojsonPath1="d:/140321.geoJson";
+
+            String geojsonPath1="d:/test/140321.geoJson";
             String shapPath1="d:/out.shp";
             transformGeoJsonToShp(geojsonPath1,shapPath1);
-             **/
+
     }
 
 }

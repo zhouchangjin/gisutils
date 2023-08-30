@@ -17,17 +17,25 @@
 			<artifactId>gt-shapefile</artifactId>
 			<version>22.1</version>
 		</dependency>
-		<dependency>
-			<groupId>org.openstreetmap.pbf</groupId>
-			<artifactId>osmpbf</artifactId>
-			<version>1.5.0</version>
-		</dependency>
 		
 		<dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
 			<version>1.6.1</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-main</artifactId>
+			<version>22.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-epsg-hsql</artifactId>
+			<version>22.1</version>
+		</dependency>
+
 
 	</dependencies>
 

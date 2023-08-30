@@ -1,8 +1,13 @@
-package com.iwhere.gisutil.projection;
+package com.iwhere.gisutil.crs;
 
 import com.iwhere.gisutil.model.GPSPoint;
 
-public class ProjectionConvertUtil {
+/**
+ * 常见的经纬度坐标系互相转换
+ * 百度坐标系 bd-09
+ * 高德/腾讯坐标系 即火星坐标系 GCJ-02
+ */
+public class GPSCRSConvertUtil {
 
     /**
      * 地球长轴半径
@@ -93,7 +98,7 @@ public class ProjectionConvertUtil {
                 + 0.000003 * Math.cos(hxGPSPoint.getLongitude() * X_PI);
         GPSPoint baiduPoint=new GPSPoint();
         baiduPoint.setLongitude(z * Math.cos(theta) + 0.0065);
-        baiduPoint.setLatitude(z * Math.cos(theta) + 0.006);
+        baiduPoint.setLatitude(z * Math.sin(theta) + 0.006);
         return baiduPoint;
     }
 
@@ -182,6 +187,15 @@ public class ProjectionConvertUtil {
 
 
     public static void main(String[] args) {
-
+            double lng=119.00647;
+            double lat=25.42912;
+            GPSPoint point=new GPSPoint();
+            point.setLongitude(lng);
+            point.setLatitude(lat);
+            System.out.println(point);
+            GPSPoint out= wgs84ToBd09(point);
+            System.out.println(out);
+            GPSPoint back=bd09ToWgs84(out);
+            System.out.println(back);
     }
 }

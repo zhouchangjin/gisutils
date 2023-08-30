@@ -36,6 +36,21 @@
 			<version>22.1</version>
 		</dependency>
 
+		<dependency>
+			<!-- geojson组件 -->
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-geojson</artifactId>
+			<version>22.1</version>
+		</dependency>
+
+		<dependency>
+			<!-- geojson数据存储 -->
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-geojsondatastore</artifactId>
+			<version>22.1</version>
+		</dependency>
+
+
 
 	</dependencies>
 

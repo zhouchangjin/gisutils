@@ -15,7 +15,16 @@ public enum CRSEnum {
     //墨卡托
     MERCATOR("EPSG:3857","墨卡托投影","PCS"),
 
-    BEIJING54("EPSG:21420","北京54-1","PCS");
+    BEIJING54_ZONE13("EPSG:21413","北京54-13带","PCS"),
+    BEIJING54_ZONE14("EPSG:21414","北京54-14带","PCS"),
+    BEIJING54_ZONE15("EPSG:21415","北京54-15带","PCS"),
+    BEIJING54_ZONE16("EPSG:21416","北京54-16带","PCS"),
+    BEIJING54_ZONE17("EPSG:21417","北京54-17带","PCS"),
+    BEIJING54_ZONE18("EPSG:21418","北京54-18带","PCS"),
+    BEIJING54_ZONE19("EPSG:21419","北京54-19带","PCS"),
+    BEIJING54_ZONE20("EPSG:21420","北京54-20带","PCS"),
+
+    UNKNOWN("","未知","PCS");
 
     CRSEnum(String code,String cName,String type){
         this.code=code;

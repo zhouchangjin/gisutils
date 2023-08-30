@@ -56,11 +56,6 @@ public class CRSConvertUtil {
         return transformCRS(srcPoint,from.getCode(),to.getCode());
     }
 
-    public static ProjectXYPoint transform84ToBeijing54(double longitude,double latitude){
-        //TODO
-        return null;
-    }
-
     public static ProjectXYPoint transform84ToMercator(double longitude,double latitude){
         return transform84ToProjectCRS(longitude,latitude,CRSEnum.MERCATOR.getCode());
     }
@@ -72,24 +67,24 @@ public class CRSConvertUtil {
         return p;
     }
 
+    public static ProjectXYPoint transform84ToBeijing54(double longitude,double latitude){
+        CRSEnum crs=CRSSelector.getBeijing54CRSByGPSLocation(longitude);
+        return transform84ToProjectCRS(longitude,latitude,crs.getCode());
+    }
+
 
     public static ProjectXYPoint transform84ToProjectCRS(GPSPoint gpsPoint, String EPSGCode){
         return transform84ToProjectCRS(gpsPoint.getLongitude(),gpsPoint.getLatitude(),EPSGCode);
     }
 
     public static void main(String[] args) {
-
-        /**
-        DirectPosition pos=transformCRS(20,119,CRSEnum.WGS84,CRSEnum.MERCATOR);
-        System.out.println(pos.getCoordinate()[0]+"-"+pos.getCoordinate()[1]);
-        DirectPosition pos1=transformCRS(13247019,2273030,CRSEnum.MERCATOR,CRSEnum.WGS84);
-        System.out.println(pos1.getCoordinate()[0]+"-"+pos1.getCoordinate()[1]);
-         **/
-
         ProjectXYPoint p=transform84ToMercator(119,29);
         System.out.println(p);
-        ProjectXYPoint p2=transform84ToProjectCRS(119.23,31.23,CRSEnum.BEIJING54.getCode());
+        ProjectXYPoint p2=transform84ToProjectCRS(119.23,31.23,CRSEnum.BEIJING54_ZONE20.getCode());
         System.out.println(p2);
+
+        ProjectXYPoint p3=transform84ToBeijing54(119.23,31.23);
+        System.out.println(p3);
     }
 
 

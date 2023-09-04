@@ -80,6 +80,10 @@ public class CRSConvertUtil {
     public static void main(String[] args) {
         ProjectXYPoint p=transform84ToMercator(119,29);
         System.out.println(p);
+
+        ProjectXYPoint pn=transform84ToMercator(119,23);
+        System.out.println(pn);
+
         ProjectXYPoint p2=transform84ToProjectCRS(119.23,31.23,CRSEnum.BEIJING54_ZONE20.getCode());
         System.out.println(p2);
 

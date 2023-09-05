@@ -11,6 +11,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
+import java.security.cert.CRLSelector;
+
 public class CRSConvertUtil {
 
     public static DirectPosition transformCRS(GeneralDirectPosition srcPt,String EPSGSource,String EPSGTarget){
@@ -67,8 +69,37 @@ public class CRSConvertUtil {
         return p;
     }
 
+    public  static ProjectXYPoint transform84ToBeijing54(double longitude,double latitude,int zoneNum){
+        String code="BEIJING54_ZONE"+zoneNum;
+        CRSEnum crs=CRSEnum.valueOf(code);
+        return  transform84ToProjectCRS(longitude,latitude,crs.getCode());
+    }
+
     public static ProjectXYPoint transform84ToBeijing54(double longitude,double latitude){
         CRSEnum crs=CRSSelector.getBeijing54CRSByGPSLocation(longitude);
+        return transform84ToProjectCRS(longitude,latitude,crs.getCode());
+    }
+
+    public static ProjectXYPoint transform84ToUTM(double logitude,double latitude){
+        CRSEnum crs= CRSSelector.getUTMCRSByGPSLocation(logitude,latitude);
+        return transform84ToProjectCRS(logitude,latitude,crs.getCode());
+    }
+
+    /**
+     * 转换84坐标到UTM坐标（北半球）
+     * @param longitude 经度
+     * @param latitude 维度
+     * @param zoneNum  分带号
+     * @return 坐标
+     */
+    public static ProjectXYPoint transform84ToUTMNorth(double longitude,double latitude,int zoneNum){
+        String code="UTM_ZONE"+zoneNum+"N";
+        CRSEnum crs=CRSEnum.valueOf(code);
+        return transform84ToProjectCRS(longitude,latitude,crs.getCode());
+    }
+
+    public static ProjectXYPoint transform84ToUTM(double longitude,double latitude,double clng,double clat){
+        CRSEnum crs=CRSSelector.getUTMCRSByGPSLocation(clng,clat);
         return transform84ToProjectCRS(longitude,latitude,crs.getCode());
     }
 
@@ -78,17 +109,35 @@ public class CRSConvertUtil {
     }
 
     public static void main(String[] args) {
+        /**
         ProjectXYPoint p=transform84ToMercator(119,29);
         System.out.println(p);
 
         ProjectXYPoint pn=transform84ToMercator(119,23);
         System.out.println(pn);
 
+        System.out.println(transform84ToUTM(113,23));
+        System.out.println(transform84ToUTM(113,23,119,23));
+        System.out.println(transform84ToUTM(108,23,113,23));
         ProjectXYPoint p2=transform84ToProjectCRS(119.23,31.23,CRSEnum.BEIJING54_ZONE20.getCode());
         System.out.println(p2);
 
         ProjectXYPoint p3=transform84ToBeijing54(119.23,31.23);
         System.out.println(p3);
+         **/
+        //在中间维度范围，变形小
+        //转换UTM 50N分带
+        System.out.println(transform84ToUTMNorth(119,23,50));
+        //转换UTM 49N分带 因为分带换了，经度减6，小范围内刚好是等比例的，所以坐标一样
+        System.out.println(transform84ToUTMNorth(113,23,49));
+        //转换UTM 48N分带 因为分带换了，经度减6，小范围内刚好是等比例的，所以坐标一样
+        System.out.println(transform84ToUTMNorth(107,23,48));
+
+        //北京54 -20 带
+        System.out.println(transform84ToBeijing54(119,24,20));
+
+        //System.out.println(transform84ToProjectCRS(119,23,CRSEnum.CGCS2000_PCS.getCode()));
+
     }
 
 

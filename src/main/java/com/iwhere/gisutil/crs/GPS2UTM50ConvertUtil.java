@@ -1,6 +1,9 @@
 package com.iwhere.gisutil.crs;
 
-public class GPS2UTMConvertUtil {
+/**
+ *  以北京的50带为标准的UTM投影
+ */
+public class GPS2UTM50ConvertUtil {
     private static double num6(double num) {
         String result = String.format("%.6f", num);
         return Double.valueOf(result);

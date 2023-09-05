@@ -24,6 +24,25 @@ public enum CRSEnum {
     BEIJING54_ZONE19("EPSG:21419","北京54-19带","PCS"),
     BEIJING54_ZONE20("EPSG:21420","北京54-20带","PCS"),
 
+    UTM_ZONE43N("EPSG:32643","UTMZONE-43带","PCS"),
+
+    UTM_ZONE44N("EPSG:32644","UTMZONE-44带","PCS"),
+
+    UTM_ZONE45N("EPSG:32645","UTMZONE-45带","PCS"),
+
+    UTM_ZONE46N("EPSG:32646","UTMZONE-46带","PCS"),
+
+    UTM_ZONE47N("EPSG:32647","UTMZONE-47带","PCS"),
+
+
+    UTM_ZONE48N("EPSG:32648","UTMZONE-48带","PCS"),
+
+
+    UTM_ZONE49N("EPSG:32649","UTMZONE-49带","PCS"),
+
+
+    UTM_ZONE50N("EPSG:32650","UTMZONE-50带","PCS"),
+
     UNKNOWN("","未知","PCS");
 
     CRSEnum(String code,String cName,String type){
@@ -53,4 +72,7 @@ public enum CRSEnum {
     public String getCname() {
         return cname;
     }
+
+    public String getType(){return type;}
+
 }

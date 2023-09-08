@@ -125,7 +125,7 @@ public class CRSConvertUtil {
         ProjectXYPoint p3=transform84ToBeijing54(119.23,31.23);
         System.out.println(p3);
          **/
-        //在中间维度范围，变形小
+        //在中间纬度范围，变形小
         //转换UTM 50N分带
         System.out.println(transform84ToUTMNorth(119,23,50));
         //转换UTM 49N分带 因为分带换了，经度减6，小范围内刚好是等比例的，所以坐标一样

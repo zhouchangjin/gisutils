@@ -14,18 +14,13 @@ public class GeoSOTUtil {
 			long codeL9=GeoSotCode1D(angle, 9); //Math.floor(longitude);
 			long partDegree=codeL9*(Math.round(64.0/(long)Math.pow(2, 15-level)));
 			double minutes=angle+256-codeL9;
-			//System.out.println("minutes "+minutes+"  "+minutes*60);
 			long partMinutes=(long)Math.floor(minutes*Math.round(60.0/Math.pow(2, 15-level)));
 			return partDegree+partMinutes;
 		}else if(level>15 && level<33) {
 			long codeL15=GeoSotCode1D(angle, 15);
 			long partDegree2Minutes=codeL15*(Math.round(64.0/(long)Math.pow(2, 21-level)));
 			double secondsPart=(angle+256)*64-codeL15;
-			long codeL9=GeoSotCode1D(angle, 9); 
-			//System.out.println("codeL9 ="+codeL9+" ");
-			//System.out.println("codeL15 ="+codeL15+" sec "+secondsPart);
 			long partSec=(long)Math.floor(secondsPart*(Math.round(60.0/(long)Math.pow(2, 21-level))));
-			//System.out.println(partSec);
 			return partDegree2Minutes+partSec;
 		}else {
 			return -1;
@@ -78,8 +73,6 @@ public class GeoSOTUtil {
 		BitSet bitsetB=longToBitSet(codeB);
 		
 		BitSet combine=mortonCode(bitsetL, bitsetB, 4);
-
-		//System.out.println(currentIndex+"_"+bitsetB.length()+"_"+combine.length());
 		long result[]=combine.toLongArray();
 		/**
 		System.out.println("==============Lat=======================");
@@ -97,7 +90,6 @@ public class GeoSOTUtil {
 	public static void main(String[] args) {
 		long code=GeoSotCode2D(116.48299, 39.99451, 20);
 		System.out.println(Long.toHexString(code));
-		//System.out.println(Long.MAX_VALUE);
 	}
 
 }

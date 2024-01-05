@@ -14,12 +14,12 @@ public class TestShapefile2OSM {
 	public static void main(String args[]) {
 		ShapefilePropeties prop=new ShapefilePropeties();
 		prop.setCharset("GBK");
-		prop.setFileName("LRDL_道路");
+		prop.setFileName("A骆岗公园道路");
 		prop.setFilePath("d:/");
 		ShapefileMappingRule rule=new ShapefileMappingRule();
 		rule.setNameProperty("CNAME");
 		rule.setHighwayProperty("WIDTH");
-		rule.setOnewayProperty("DIRECTION");
+		rule.setOnewayProperty("Direction");
 		rule.setMaxspeedProperty("SPEEDCLASS");
 		
 		rule.setDefaultClass(FeatureClassEnum.PRIMARY);
@@ -135,7 +135,7 @@ public class TestShapefile2OSM {
 				"CLASID");
 		
 	   String osmfilePath="d:/";
-	   String osmName="Fujian_Road_Network";
+	   String osmName="lggydl";
 	   SimpleOSMDocumentWriter osmdocWriter=new SimpleOSMDocumentWriter(osmfilePath,osmName);
 	   osmdocWriter.initialize();
 	   osmdocWriter.open();

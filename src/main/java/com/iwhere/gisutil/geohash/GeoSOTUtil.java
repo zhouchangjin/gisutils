@@ -126,9 +126,9 @@ public class GeoSOTUtil {
 		long code=geosotLongCode2D(116.48299, 39.99451, 20,4);
 		long code2=geosotLongCode2D(116.48153, 39.99407, 20,4);
 		long code3=geosotLongCode2D(116.48251, 39.99354, 20,4);
-		System.out.println(Long.toHexString(code));
-		System.out.println(Long.toHexString(code2));
-		System.out.println(Long.toHexString(code3));
+		System.out.println(Long.toHexString(code)+"--"+code);
+		System.out.println(Long.toHexString(code2)+"--"+code2);
+		System.out.println(Long.toHexString(code3)+"--"+code3);
 
 		long code1=geosotLongCode2D(116.48299, 39.99451, 31,4);
 		BitSet bs=longToBitSet(code1);
